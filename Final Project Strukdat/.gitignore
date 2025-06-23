@@ -1,0 +1,31 @@
+# Binaries
+main
+graph_visualizer
+main_oop
+main_debug
+*.exe
+*.out
+*.o
+
+# Temporary/Exported Data
+*.csv
+!locations.csv
+!README.md
+temp_*.csv
+temp_path.txt
+temp_routes.csv
+temp_locations.csv
+
+# Editor/OS
+.DS_Store
+.vscode/
+*.swp
+*.swo
+
+# Test/Build Artifacts
+*.log
+*.tmp
+*.bak
+
+# Ignore test files
+/test*

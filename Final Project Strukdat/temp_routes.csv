@@ -12,10 +12,10 @@ Madura,Medan,98.4886,295.466,738664
 Madura,Bandung,296.985,890.955,2.22739e+06
 Makassar,Malang,111.803,335.41,838525
 Makassar,Denpasar,206.155,618.466,1.54616e+06
-Makassar,Surabaya,269.258,807.775,2.01944e+06
+Makassar,Sidoarjo,222.991,668.973,1.67243e+06
 Malang,Makassar,111.803,335.41,838525
+Malang,Sidoarjo,112.805,338.415,846039
 Malang,Surabaya,158.114,474.342,1.18585e+06
-Malang,Denpasar,212.132,636.396,1.59099e+06
 Medan,Madura,98.4886,295.466,738664
 Medan,Jakarta,158.114,474.342,1.18585e+06
 Medan,Bandung,390.512,1171.54,2.92884e+06
@@ -25,9 +25,12 @@ Palembang,Denpasar,304.138,912.414,2.28104e+06
 Semarang,Bandung,141.421,424.264,1.06066e+06
 Semarang,Yogyakarta,158.114,474.342,1.18585e+06
 Semarang,Denpasar,223.607,670.82,1.67705e+06
+Sidoarjo,Surabaya,47.1699,30,12000
+Sidoarjo,Malang,112.805,338.415,846039
+Sidoarjo,Makassar,222.991,668.973,1.67243e+06
+Surabaya,Sidoarjo,47.1699,141.51,353774
 Surabaya,Malang,158.114,474.342,1.18585e+06
 Surabaya,Semarang,223.607,670.82,1.67705e+06
-Surabaya,Makassar,269.258,807.775,2.01944e+06
 Yogyakarta,Bandung,70.7107,212.132,530330
 Yogyakarta,Denpasar,158.114,474.342,1.18585e+06
 Yogyakarta,Semarang,158.114,474.342,1.18585e+06
