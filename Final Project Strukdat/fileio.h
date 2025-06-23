@@ -4,7 +4,7 @@
 #include <fstream>
 #include <sstream>
 #include <string>
-#include "Graph.h"
+#include "graph.h"
 
 void loadLocationsFromFile(const std::string& filename, Graph& graph) {
     std::ifstream file(filename);

@@ -7,15 +7,27 @@
 #include <map>
 #include <limits>
 #include <algorithm>
+#include <cmath>
 
 class Location {
 private:
     std::string name;
+    double x, y;  // Koordinat lokasi
 public:
-    Location(const std::string& name) : name(name) {}
-    std::string getName() const {
-        return name;
+    Location(const std::string& name, double x = 0, double y = 0) 
+        : name(name), x(x), y(y) {}
+    
+    std::string getName() const { return name; }
+    double getX() const { return x; }
+    double getY() const { return y; }
+    
+    // Hitung jarak Euclidean ke lokasi lain
+    double distanceTo(const Location& other) const {
+        double dx = x - other.x;
+        double dy = y - other.y;
+        return std::sqrt(dx*dx + dy*dy);
     }
+    
     bool operator<(const Location& other) const {
         return name < other.name;
     }
@@ -25,7 +37,7 @@ class Route {
 private:
     std::string source;
     std::string destination;
-    double distance;
+    double distance;  // Akan dihitung otomatis dari koordinat
     double time;
     double cost;
     int transit_count;
@@ -56,14 +68,20 @@ private:
     std::map<std::string, std::vector<Route>> adjList;
 
 public:
-    void addLocation(const std::string& name) {
+    // Menambah lokasi dengan koordinat
+    void addLocation(const std::string& name, double x, double y) {
         if (locations.find(name) == locations.end()) {
-            locations.emplace(name, Location(name));
+            locations.emplace(name, Location(name, x, y));
             adjList[name] = {};
-            std::cout << "Lokasi '" << name << "' berhasil ditambahkan." << std::endl;
+            std::cout << "Lokasi '" << name << "' di koordinat (" << x << ", " << y << ") berhasil ditambahkan." << std::endl;
         } else {
             std::cout << "Lokasi '" << name << "' sudah ada." << std::endl;
         }
+    }
+
+    // Overload untuk backward compatibility
+    void addLocation(const std::string& name) {
+        addLocation(name, 0, 0);
     }
 
     void removeLocation(const std::string& name) {
@@ -81,6 +99,30 @@ public:
         }
     }
 
+    // Menambah rute dengan jarak otomatis dari koordinat
+    void addRoute(const std::string& sourceName, const std::string& destName,
+                  double time, double cost, int transit_count) {
+        if (locations.find(sourceName) == locations.end() || locations.find(destName) == locations.end()) {
+            std::cout << "Lokasi asal atau tujuan tidak ditemukan." << std::endl;
+            return;
+        }
+
+        for (const auto& r : adjList[sourceName]) {
+            if (r.getDestination() == destName) {
+                std::cout << "Rute dari '" << sourceName << "' ke '" << destName << "' sudah ada." << std::endl;
+                return;
+            }
+        }
+
+        // Hitung jarak otomatis dari koordinat
+        double distance = locations.at(sourceName).distanceTo(locations.at(destName));
+        
+        adjList[sourceName].emplace_back(sourceName, destName, distance, time, cost, transit_count);
+        std::cout << "Rute dari '" << sourceName << "' ke '" << destName << "' berhasil ditambahkan." << std::endl;
+        std::cout << "Jarak otomatis: " << distance << " km" << std::endl;
+    }
+
+    // Overload untuk manual distance (backward compatibility)
     void addRoute(const std::string& sourceName, const std::string& destName,
                   double distance, double time, double cost, int transit_count) {
         if (locations.find(sourceName) == locations.end() || locations.find(destName) == locations.end()) {
@@ -141,9 +183,7 @@ public:
             return empty_routes;
         }
         return adjList.at(sourceName);
-    }
-
-    void displayGraph() const {
+    }    void displayGraph() const {
         std::cout << "\n--- Representasi Graf Rute ---" << std::endl;
         if (locations.empty()) {
             std::cout << "Graf kosong. Tidak ada lokasi atau rute." << std::endl;
@@ -153,7 +193,11 @@ public:
         for (const auto& pair : adjList) {
             const std::string& sourceName = pair.first;
             const std::vector<Route>& routes = pair.second;
-            std::cout << "Lokasi: " << sourceName << std::endl;
+            const Location& loc = locations.at(sourceName);
+            
+            std::cout << "Lokasi: " << sourceName 
+                      << " [Koordinat: (" << loc.getX() << ", " << loc.getY() << ")]" << std::endl;
+            
             if (routes.empty()) {
                 std::cout << "  Tidak ada rute keluar dari lokasi ini." << std::endl;
             } else {
@@ -167,14 +211,19 @@ public:
             }
         }
         std::cout << "------------------------------" << std::endl;
-    }
-
-    void listLocations() const {
-        std::cout << "Daftar Lokasi: ";
-        for (const auto& pair : locations) {
-            std::cout << pair.first << " ";
+    }    void listLocations() const {
+        std::cout << "\n=== Daftar Lokasi ===" << std::endl;
+        if (locations.empty()) {
+            std::cout << "Tidak ada lokasi yang tersedia." << std::endl;
+            return;
         }
-        std::cout << std::endl;
+        
+        for (const auto& pair : locations) {
+            const Location& loc = pair.second;
+            std::cout << pair.first << " -> Koordinat: (" 
+                      << loc.getX() << ", " << loc.getY() << ")" << std::endl;
+        }
+        std::cout << "===================" << std::endl;
     }
 };
 
