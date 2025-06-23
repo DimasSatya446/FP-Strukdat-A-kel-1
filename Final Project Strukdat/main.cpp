@@ -12,7 +12,6 @@
 #include <cstdlib>
 using namespace std;
 
-// Location class
 class Location {
 private:
     string name;
@@ -36,7 +35,6 @@ public:
     }
 };
 
-// Route class
 class Route {
 private:
     string source, destination;
@@ -54,7 +52,6 @@ public:
     double getCost() const { return cost; }
 };
 
-// Graph class
 class Graph {
 private:
     map<string, Location> locations;
@@ -114,9 +111,9 @@ public:
             
             cout << "🏙️  " << sourceName 
                   << " [📍 (" << loc.getX() << ", " << loc.getY() << ")]" << endl;
-            
-            if (routes.empty()) {
-                cout << "   ❌ Tidak ada rute keluar dari lokasi ini." << endl;            } else {
+              if (routes.empty()) {
+                cout << "   ❌ Tidak ada rute keluar dari lokasi ini." << endl;
+            } else {
                 for (const Route& route : routes) {
                     cout << "   🚗 → " << route.getDestination()
                           << " | 📏 " << fixed << setprecision(1) << route.getDistance() << " km"
@@ -176,13 +173,11 @@ public:
     }
 };
 
-// PathResult struct
 struct PathResult {
     vector<string> path;
     double totalCost;
 };
 
-// Dijkstra algorithm
 PathResult findShortestPath(const Graph& graph, const string& start,
                             const string& end, const string& mode) {
     map<string, double> cost;
@@ -250,10 +245,12 @@ void showMenu() {
     cout << "╚══════════════════════════════════════════════════════════════════════════════╝" << endl;
     cout << "1. 📂 Load Lokasi dari File CSV" << endl;
     cout << "2. 🏙️  Tampilkan Daftar Lokasi" << endl;
-    cout << "3. 🛤️  Sambungkan Dua Lokasi (Tambah Rute)" << endl;
-    cout << "4. 🗺️  Tampilkan Graf Lengkap" << endl;
-    cout << "5. 🚀 Cari Rute Terbaik" << endl;
-    cout << "6. 🎨 Visualisasi Graf" << endl;
+    cout << "3. ➕ Tambah Lokasi Baru" << endl;
+    cout << "4. 🛤️  Sambungkan Dua Lokasi (Tambah Rute)" << endl;
+    cout << "5. 🤖 Auto-Generate Rute Realistis" << endl;
+    cout << "6. 🗺️  Tampilkan Graf Lengkap" << endl;
+    cout << "7. 🚀 Cari Rute Terbaik" << endl;
+    cout << "8. 🎨 Visualisasi Graf" << endl;
     cout << "0. ❌ Keluar" << endl;
     cout << "\nPilih menu: ";
     cout.flush();
@@ -412,36 +409,56 @@ void findBestRoute(Graph& graph) {
     
     cout << "\n🔍 Mencari rute dengan prioritas " << modeDesc << "..." << endl;
     
-    PathResult result = findShortestPath(graph, asal, tujuan, mode);
-    if (!result.path.empty()) {
+    PathResult result = findShortestPath(graph, asal, tujuan, mode);    if (!result.path.empty()) {
         cout << "\n✅ RUTE DITEMUKAN!" << endl;
-        cout << "🗺️  Jalur: ";
+        
+        // Show simple route path
+        cout << "🗺️  Rute: ";
         for (size_t i = 0; i < result.path.size(); ++i) {
             cout << result.path[i];
-            if (i < result.path.size() - 1) cout << " ➜ ";
-        }        cout << "\n📊 Total " << mode << ": " << fixed << setprecision(1) << result.totalCost;
+            if (i < result.path.size() - 1) cout << " - ";
+        }
+        cout << endl;
+        
+        cout << "📊 Total " << mode << ": " << fixed << setprecision(1) << result.totalCost;
         if (mode == "biaya") cout << " rupiah";
         else if (mode == "waktu") cout << " menit";
         else if (mode == "jarak") cout << " km";
         cout << endl;
         
-        // Show detailed route
+        // Show detailed route with all intermediate stops
         cout << "\n📋 DETAIL PERJALANAN:" << endl;
+        cout << "═══════════════════════════════════════════════════" << endl;
+        
+        double totalDistance = 0, totalTime = 0, totalCost = 0;
+        
         for (size_t i = 0; i < result.path.size() - 1; ++i) {
             const string& from = result.path[i];
             const string& to = result.path[i + 1];
             
             const vector<Route>& routes = graph.getRoutesFrom(from);
             for (const Route& route : routes) {
-                if (route.getDestination() == to) {                    cout << "  🚗 " << from << " → " << to << endl;
-                    cout << "     📏 Jarak: " << fixed << setprecision(1) << route.getDistance() << " km" << endl;
-                    cout << "     ⏱️  Waktu: " << route.getTime() << " menit" << endl;
-                    cout << "     💰 Biaya: Rp " << (int)route.getCost() << endl;
+                if (route.getDestination() == to) {
+                    cout << "🔸 Langkah " << (i + 1) << ": " << from << " → " << to << endl;
+                    cout << "   📏 Jarak: " << fixed << setprecision(1) << route.getDistance() << " km" << endl;
+                    cout << "   ⏱️  Waktu: " << route.getTime() << " menit" << endl;
+                    cout << "   💰 Biaya: Rp " << (int)route.getCost() << endl;
+                    
+                    totalDistance += route.getDistance();
+                    totalTime += route.getTime();
+                    totalCost += route.getCost();
                     cout << endl;
                     break;
                 }
             }
         }
+        
+        cout << "═══════════════════════════════════════════════════" << endl;
+        cout << "📊 TOTAL PERJALANAN:" << endl;
+        cout << "📏 Total Jarak: " << fixed << setprecision(1) << totalDistance << " km" << endl;
+        cout << "⏱️  Total Waktu: " << totalTime << " menit (" << fixed << setprecision(1) << (totalTime/60.0) << " jam)" << endl;
+        cout << "💰 Total Biaya: Rp " << (int)totalCost << endl;
+        cout << "🎯 Optimasi berdasarkan: " << modeDesc << endl;
     }
 }
 
@@ -450,7 +467,66 @@ void runVisualization(Graph& graph) {
         cout << "❌ Tidak ada data untuk divisualisasikan. Load lokasi terlebih dahulu." << endl;
         return;
     }
-      cout << "\n🎨 Menjalankan visualisasi graf..." << endl;
+    
+    cout << "\n🎨 VISUALISASI GRAF" << endl;
+    
+    // Pilih lokasi untuk highlight shortest path
+    string startCity = "", endCity = "";
+    
+    cout << "🔍 Pilih lokasi untuk menampilkan jalur tercepat (opsional):" << endl;
+    cout << "[1] Ya, pilih lokasi awal dan tujuan" << endl;
+    cout << "[2] Tidak, tampilkan graf saja" << endl;
+    cout << "Pilihan (1-2): ";
+    
+    int choice;
+    cin >> choice;
+    
+    if (choice == 1) {
+        graph.listLocations();
+        
+        // Convert locations to vector for indexing
+        vector<string> locationNames;
+        for (const auto& loc : graph.getLocations()) {
+            locationNames.push_back(loc.first);
+        }
+        
+        // Select start location
+        cout << "\n🚀 Pilih lokasi awal untuk jalur tercepat:" << endl;
+        for (size_t i = 0; i < locationNames.size(); ++i) {
+            cout << "[" << (i+1) << "] " << locationNames[i] << endl;
+        }
+        cout << "Pilihan lokasi awal (1-" << locationNames.size() << "): ";
+        
+        int startChoice;
+        cin >> startChoice;
+        if (startChoice >= 1 && startChoice <= (int)locationNames.size()) {
+            startCity = locationNames[startChoice - 1];
+            
+            // Select destination location
+            cout << "\n🏁 Pilih lokasi tujuan:" << endl;
+            for (size_t i = 0; i < locationNames.size(); ++i) {
+                if (i != startChoice - 1) {
+                    cout << "[" << (i+1) << "] " << locationNames[i] << endl;
+                }
+            }
+            cout << "Pilihan lokasi tujuan (1-" << locationNames.size() << ", kecuali " << startChoice << "): ";
+            
+            int destChoice;
+            cin >> destChoice;
+            if (destChoice >= 1 && destChoice <= (int)locationNames.size() && destChoice != startChoice) {
+                endCity = locationNames[destChoice - 1];
+                cout << "✅ Akan menampilkan jalur tercepat dari " << startCity << " ke " << endCity << endl;
+            } else {
+                cout << "❌ Pilihan tidak valid, hanya menampilkan graf biasa" << endl;
+                startCity = "";
+                endCity = "";
+            }
+        } else {
+            cout << "❌ Pilihan tidak valid, hanya menampilkan graf biasa" << endl;
+        }
+    }
+    
+    cout << "\n🎨 Menjalankan visualisasi graf..." << endl;
     
     // Save current graph to temporary file for visualizer
     ofstream tempFile("temp_locations.csv");
@@ -465,13 +541,22 @@ void runVisualization(Graph& graph) {
             for (const auto& locPair : graph.getLocations()) {
                 const string& sourceName = locPair.first;
                 const vector<Route>& routes = graph.getRoutesFrom(sourceName);
-                  for (const Route& route : routes) {
+                
+                for (const Route& route : routes) {
                     routeFile << route.getSource() << "," << route.getDestination() << ","
                              << route.getDistance() << "," << route.getTime() << ","
                              << route.getCost() << endl;
                 }
             }
             routeFile.close();
+            
+            // Save path selection to temp file
+            ofstream pathFile("temp_path.txt");
+            if (pathFile.is_open()) {
+                pathFile << startCity << "," << endCity << endl;
+                pathFile.close();
+            }
+            
             cout << "✅ Data disimpan untuk visualisasi." << endl;
             
             // Jalankan visualizer secara otomatis
@@ -485,6 +570,187 @@ void runVisualization(Graph& graph) {
     }
 }
 
+void addNewLocation(Graph& graph) {
+    cout << "\n➕ TAMBAH LOKASI BARU" << endl;
+    
+    string namaLokasi;
+    double x, y;
+    
+    cout << "Nama lokasi: ";
+    cin.ignore();
+    getline(cin, namaLokasi);
+    
+    // Check if location already exists
+    if (graph.getLocations().find(namaLokasi) != graph.getLocations().end()) {
+        cout << "❌ Lokasi '" << namaLokasi << "' sudah ada!" << endl;
+        return;
+    }
+    
+    cout << "Koordinat X: ";
+    cin >> x;
+    cout << "Koordinat Y: ";
+    cin >> y;
+    
+    // Add to graph
+    graph.addLocation(namaLokasi, x, y);
+    
+    // Append to locations.csv file
+    ofstream file("locations.csv", ios::app);
+    if (file.is_open()) {
+        file << namaLokasi << "," << x << "," << y << endl;
+        file.close();
+        cout << "✅ Lokasi berhasil disimpan ke file locations.csv" << endl;
+    } else {
+        cout << "⚠️  Lokasi ditambahkan ke sistem tapi gagal menyimpan ke file CSV" << endl;
+    }
+}
+
+void autoGenerateAllRoutes(Graph& graph) {
+    cout << "\n🤖 AUTO-GENERATE RUTE REALISTIS" << endl;
+    
+    const auto& locations = graph.getLocations();
+    if (locations.size() < 2) {
+        cout << "❌ Minimal diperlukan 2 lokasi untuk membuat rute." << endl;
+        return;
+    }
+    
+    cout << "🎯 Akan membuat rute antar kota yang berdekatan secara geografis..." << endl;
+    cout << "📊 Total lokasi: " << locations.size() << endl;
+    
+    cout << "\nPilih mode untuk menghitung waktu dan biaya:" << endl;
+    cout << "[1] 🏎️  Mode Cepat (waktu = jarak x 2, biaya = jarak x 5000)" << endl;
+    cout << "[2] 🚗 Mode Normal (waktu = jarak x 3, biaya = jarak x 7500)" << endl;
+    cout << "[3] 🚌 Mode Ekonomis (waktu = jarak x 5, biaya = jarak x 3000)" << endl;
+    cout << "Pilihan mode (1-3): ";
+    
+    int modeChoice;
+    cin >> modeChoice;
+    
+    double timeMultiplier, costMultiplier;
+    
+    switch(modeChoice) {
+        case 1:
+            timeMultiplier = 2.0;
+            costMultiplier = 5000.0;
+            cout << "✅ Mode Cepat dipilih" << endl;
+            break;
+        case 2:
+            timeMultiplier = 3.0;
+            costMultiplier = 7500.0;
+            cout << "✅ Mode Normal dipilih" << endl;
+            break;
+        case 3:
+            timeMultiplier = 5.0;
+            costMultiplier = 3000.0;
+            cout << "✅ Mode Ekonomis dipilih" << endl;
+            break;
+        default:
+            cout << "❌ Pilihan tidak valid, menggunakan mode Normal" << endl;
+            timeMultiplier = 3.0;
+            costMultiplier = 7500.0;
+            break;
+    }
+    
+    cout << "\n🔧 Pilih metode koneksi:" << endl;
+    cout << "[1] 🌐 Koneksi berdasarkan jarak terdekat (max 3 koneksi per kota)" << endl;
+    cout << "[2] 📏 Koneksi kota dalam radius tertentu" << endl;
+    cout << "Pilihan metode (1-2): ";
+    
+    int connectionMethod;
+    cin >> connectionMethod;
+    
+    cout << "\n🚀 Memulai pembuatan rute..." << endl;
+    int routesCreated = 0;
+    int routesSkipped = 0;
+    
+    if (connectionMethod == 1) {
+        // Method 1: Connect each city to its 3 nearest neighbors
+        for (const auto& source : locations) {
+            // Calculate distances to all other cities
+            vector<pair<double, string>> distances;
+            for (const auto& dest : locations) {
+                if (source.first != dest.first) {
+                    double distance = source.second.distanceTo(dest.second);
+                    distances.push_back({distance, dest.first});
+                }
+            }
+            
+            // Sort by distance and take the 3 closest
+            sort(distances.begin(), distances.end());
+            int maxConnections = min(3, (int)distances.size());
+            
+            for (int i = 0; i < maxConnections; ++i) {
+                string destName = distances[i].second;
+                
+                // Check if route already exists
+                bool routeExists = false;
+                const vector<Route>& existingRoutes = graph.getRoutesFrom(source.first);
+                for (const Route& route : existingRoutes) {
+                    if (route.getDestination() == destName) {
+                        routeExists = true;
+                        break;
+                    }
+                }
+                
+                if (routeExists) {
+                    routesSkipped++;
+                    continue;
+                }
+                
+                double distance = distances[i].first;
+                double time = distance * timeMultiplier;
+                double cost = distance * costMultiplier;
+                
+                graph.addRoute(source.first, destName, time, cost);
+                routesCreated++;
+            }
+        }
+    } else {
+        // Method 2: Connect cities within a radius
+        cout << "Masukkan radius maksimal koneksi (km): ";
+        double maxRadius;
+        cin >> maxRadius;
+        
+        for (const auto& source : locations) {
+            for (const auto& dest : locations) {
+                if (source.first == dest.first) continue;
+                
+                double distance = source.second.distanceTo(dest.second);
+                if (distance > maxRadius) continue; // Skip if too far
+                
+                // Check if route already exists
+                bool routeExists = false;
+                const vector<Route>& existingRoutes = graph.getRoutesFrom(source.first);
+                for (const Route& route : existingRoutes) {
+                    if (route.getDestination() == dest.first) {
+                        routeExists = true;
+                        break;
+                    }
+                }
+                
+                if (routeExists) {
+                    routesSkipped++;
+                    continue;
+                }
+                
+                double time = distance * timeMultiplier;
+                double cost = distance * costMultiplier;
+                
+                graph.addRoute(source.first, dest.first, time, cost);
+                routesCreated++;
+            }
+        }
+    }
+    
+    cout << "\n✅ SELESAI!" << endl;
+    cout << "📊 Statistik:" << endl;
+    cout << "   🆕 Rute baru dibuat: " << routesCreated << endl;
+    cout << "   ⏭️  Rute dilewati (sudah ada): " << routesSkipped << endl;
+    cout << "   📍 Total lokasi: " << locations.size() << endl;
+    cout << "   🔗 Rata-rata koneksi per kota: " << fixed << setprecision(1) 
+         << (double)routesCreated / locations.size() << endl;
+}
+
 int main() {
     Graph graph;
     int pilihan;
@@ -493,9 +759,7 @@ int main() {
 
     do {
         showMenu();
-        cin >> pilihan;
-
-        if (pilihan == 1) {
+        cin >> pilihan;        if (pilihan == 1) {
             string filename;
             cout << "📂 Masukkan nama file CSV (contoh: locations.csv): ";
             cin.ignore();
@@ -506,15 +770,21 @@ int main() {
             graph.listLocations();
         }
         else if (pilihan == 3) {
-            selectAndConnectLocations(graph);
+            addNewLocation(graph);
         }
         else if (pilihan == 4) {
-            graph.displayGraph();
+            selectAndConnectLocations(graph);
         }
         else if (pilihan == 5) {
-            findBestRoute(graph);
+            autoGenerateAllRoutes(graph);
         }
         else if (pilihan == 6) {
+            graph.displayGraph();
+        }
+        else if (pilihan == 7) {
+            findBestRoute(graph);
+        }
+        else if (pilihan == 8) {
             runVisualization(graph);
         }
         else if (pilihan == 0) {

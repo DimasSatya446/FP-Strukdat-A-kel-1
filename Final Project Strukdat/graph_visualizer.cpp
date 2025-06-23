@@ -7,6 +7,10 @@
 #include <map>
 #include <vector>
 #include <algorithm>
+#include <queue>
+#include <limits>
+#include <set>
+#include <iomanip>
 using namespace std;
 
 // Simple Location class for visualizer
@@ -103,6 +107,78 @@ public:
         cout << "Loaded " << routes.size() << " routes." << endl;
     }
 };
+
+// PathResult struct for visualizer
+struct SimplePathResult {
+    vector<string> path;
+    double totalCost;
+};
+
+// Dijkstra algorithm for SimpleGraph
+SimplePathResult findShortestPathSimple(const SimpleGraph& graph, const string& start,
+                                       const string& end, const string& mode) {
+    map<string, double> cost;
+    map<string, string> previous;
+    set<string> visited;
+
+    auto cmp = [&cost](const string& a, const string& b) {
+        return cost[a] > cost[b];
+    };
+    priority_queue<string, vector<string>, decltype(cmp)> pq(cmp);
+
+    for (const auto& pair : graph.locations) {
+        cost[pair.first] = numeric_limits<double>::infinity();
+    }
+
+    cost[start] = 0;
+    pq.push(start);
+
+    while (!pq.empty()) {
+        string current = pq.top();
+        pq.pop();
+
+        if (visited.count(current)) continue;
+        visited.insert(current);
+
+        for (const auto& route : graph.routes) {
+            if (route.source != current) continue;
+            
+            string neighbor = route.destination;
+            double weight = 0;
+
+            if (mode == "jarak") weight = route.distance;
+            else if (mode == "waktu") weight = route.time;
+            else if (mode == "biaya") weight = route.cost;
+            else {
+                cerr << "❌ Mode tidak dikenal!" << endl;
+                return {};
+            }
+
+            double newCost = cost[current] + weight;
+            if (newCost < cost[neighbor]) {
+                cost[neighbor] = newCost;
+                previous[neighbor] = current;
+                pq.push(neighbor);
+            }
+        }
+    }
+
+    vector<string> path;
+    string temp = end;
+    while (temp != start && previous.find(temp) != previous.end()) {
+        path.push_back(temp);
+        temp = previous[temp];
+    }
+
+    if (temp == start) {
+        path.push_back(start);
+        reverse(path.begin(), path.end());
+        return { path, cost[end] };
+    }
+
+    cout << "❌ Rute tidak ditemukan dari " << start << " ke " << end << endl;
+    return { {}, 0 };
+}
 
 class GraphVisualizer {
 private:
@@ -237,12 +313,12 @@ public:
         
         sf::Text legend;
         legend.setFont(font);
-        legend.setString("Legend:\nBlue = Location\nGreen = Route\nRed = Shortest Path\nYellow = Path Node");
+        legend.setString("Legend:\nBlue = Location\nGreen = Start Point\nMagenta = End Point\nGray = Route\nRed = Shortest Path");
         legend.setCharacterSize(14);
         legend.setFillColor(sf::Color::Black);
         legend.setPosition(10, 10);
         
-        sf::RectangleShape bg(sf::Vector2f(200, 100));
+        sf::RectangleShape bg(sf::Vector2f(220, 120));
         bg.setFillColor(sf::Color(255, 255, 255, 200));
         bg.setPosition(5, 5);
         
@@ -251,11 +327,49 @@ public:
     }
     
     void run() {
+        // Baca pilihan lokasi dari file temp_path.txt
+        SimplePathResult shortestPath;
+        string startCity = "", endCity = "";
+        
+        ifstream pathFile("temp_path.txt");
+        if (pathFile.is_open()) {
+            string line;
+            if (getline(pathFile, line)) {
+                stringstream ss(line);
+                getline(ss, startCity, ',');
+                getline(ss, endCity);
+                pathFile.close();
+            }
+        }
+        
+        // Jika ada pilihan lokasi yang valid, cari jalur tercepat
+        if (!startCity.empty() && !endCity.empty() && 
+            graph.locations.find(startCity) != graph.locations.end() && 
+            graph.locations.find(endCity) != graph.locations.end()) {
+            
+            cout << "🔍 Mencari jalur tercepat dari " << startCity << " ke " << endCity << "..." << endl;
+            shortestPath = findShortestPathSimple(graph, startCity, endCity, "jarak");
+            
+            if (!shortestPath.path.empty()) {
+                cout << "✅ Jalur tercepat ditemukan: ";
+                for (size_t i = 0; i < shortestPath.path.size(); ++i) {
+                    cout << shortestPath.path[i];
+                    if (i < shortestPath.path.size() - 1) cout << " → ";
+                }
+                cout << " (Total: " << fixed << setprecision(1) << shortestPath.totalCost << " km)" << endl;
+            }
+        } else {
+            cout << "ℹ️  Tidak ada jalur khusus yang dipilih, menampilkan seluruh graf." << endl;
+        }
+        
         cout << "=== GRAPH VISUALIZATION ===" << endl;
         cout << "Controls:" << endl;
         cout << "- Mouse wheel: Zoom in/out" << endl;
         cout << "- Mouse drag: Pan view" << endl;
         cout << "- ESC: Exit" << endl;
+        if (!shortestPath.path.empty()) {
+            cout << "🔴 Jalur merah menunjukkan rute tercepat dari " << startCity << " ke " << endCity << endl;
+        }
         
         sf::Vector2i lastMousePos;
         bool dragging = false;
@@ -308,7 +422,12 @@ public:
             
             // Draw all routes first (so they appear behind nodes)
             for (const SimpleRoute& route : graph.routes) {
-                drawRoute(route.source, route.destination);
+                drawRoute(route.source, route.destination, sf::Color(128, 128, 128)); // Gray color
+            }
+            
+            // Draw shortest path (highlighted in red)
+            if (!shortestPath.path.empty()) {
+                highlightPath(shortestPath.path, sf::Color::Red);
             }
             
             // Draw all locations (so they appear on top)
@@ -317,8 +436,10 @@ public:
                 sf::Color nodeColor = sf::Color::Blue;
                 
                 // Highlight start and end nodes
-                if (locPair.first == "Jakarta") nodeColor = sf::Color::Green;
-                if (locPair.first == "Malang") nodeColor = sf::Color::Red;
+                if (!shortestPath.path.empty()) {
+                    if (locPair.first == shortestPath.path.front()) nodeColor = sf::Color::Green;
+                    if (locPair.first == shortestPath.path.back()) nodeColor = sf::Color::Magenta;
+                }
                 
                 drawLocation(locPair.first, loc.x, loc.y, nodeColor);
             }
