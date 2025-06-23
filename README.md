@@ -1,4 +1,4 @@
-![Screenshot 2025-06-24 033739](https://github.com/user-attachments/assets/26b773d3-d7b2-4ae5-b309-3b5c7ff1e8a5)# soal 1
+# soal 1
 ![Screenshot 2025-06-24 030741](https://github.com/user-attachments/assets/c8145495-c21f-4b35-9690-da5b79874a6f)
 # soal 2
 ![Screenshot 2025-06-24 032519](https://github.com/user-attachments/assets/d3e8cd90-75eb-4d4a-b983-76f546aa5103)
