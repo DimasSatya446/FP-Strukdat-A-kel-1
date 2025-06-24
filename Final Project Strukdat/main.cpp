@@ -42,13 +42,14 @@ public:
                 case 4: handleAddRoute(); break;
                 case 5: handleRemoveLocation(); break;
                 case 6: handleRemoveRoute(); break;
-                case 7: handleUpdateRoute(); break;
+                case 7: handleUpdateRoute(); break;                
                 case 8: handleAutoGenerateRoutes(); break;
-                case 9: handleDisplayGraph(); break;
-                case 10: handleFindBestRoute(); break;
-                case 11: handleFindRouteWithPreference(); break;
-                case 12: handleTextVisualization(); break;
-                case 13: handleGraphicalVisualization(); break;
+                case 9: handleMakeBidirectional(); break;
+                case 10: handleDisplayGraph(); break;
+                case 11: handleFindBestRoute(); break;
+                case 12: handleFindRouteWithPreference(); break;
+                case 13: handleTextVisualization(); break;
+                case 14: handleGraphicalVisualization(); break;
                 case 0: std::cout << "👋 Terima kasih telah menggunakan sistem ini!" << std::endl; break;
                 default: std::cout << "❌ Pilihan tidak valid." << std::endl; break;
             }
@@ -76,13 +77,13 @@ private:
         std::cout << "6.  🗑️  Hapus Rute" << std::endl;
         std::cout << "7.  ✏️  Update Rute" << std::endl;
         std::cout << "8.  🤖 Auto-Generate Rute" << std::endl;
-        std::cout << "\n=== PENCARIAN & SIMULASI ===" << std::endl;
-        std::cout << "9.  🗺️  Tampilkan Graf Lengkap" << std::endl;
-        std::cout << "10. 🚀 Cari Rute Terbaik (Single Mode)" << std::endl;
-        std::cout << "11. 🎯 Cari Rute dengan Preferensi Multi-kriteria" << std::endl;
+        std::cout << "9.  🔄 Jadikan Graf Bidirectional" << std::endl;        std::cout << "\n=== PENCARIAN & SIMULASI ===" << std::endl;
+        std::cout << "10. 🗺️  Tampilkan Graf Lengkap" << std::endl;
+        std::cout << "11. 🚀 Cari Rute Terbaik (Single Mode)" << std::endl;
+        std::cout << "12. 🎯 Cari Rute dengan Preferensi Multi-kriteria" << std::endl;
         std::cout << "\n=== VISUALISASI ===" << std::endl;
-        std::cout << "12. 📊 Visualisasi Teks (Graf & Tree)" << std::endl;
-        std::cout << "13. 🎨 Visualisasi Grafis (SFML)" << std::endl;
+        std::cout << "13. 📊 Visualisasi Teks (Graf & Tree)" << std::endl;
+        std::cout << "14. 🎨 Visualisasi Grafis (SFML)" << std::endl;
         std::cout << "\n0.  ❌ Keluar" << std::endl;
         std::cout << "\nPilih menu: ";
         std::cout.flush();
@@ -126,8 +127,7 @@ private:
             }
         }
     }
-    
-    void handleAddRoute() {
+      void handleAddRoute() {
         if (!hasLocations()) return;
         
         graphManager.listLocations();
@@ -150,7 +150,15 @@ private:
         std::cout << "Biaya perjalanan (Rp): ";
         std::cin >> biaya;
         
-        graphManager.addRoute(asal, tujuan, waktu, biaya);
+        char bidirectional;
+        std::cout << "Buat rute dua arah? (y/n): ";
+        std::cin >> bidirectional;
+        
+        if (bidirectional == 'y' || bidirectional == 'Y') {
+            graphManager.addBidirectionalRoute(asal, tujuan, waktu, biaya);
+        } else {
+            graphManager.addRoute(asal, tujuan, waktu, biaya);
+        }
     }
     
     void handleRemoveLocation() {
@@ -327,6 +335,23 @@ private:
     
     void handleGraphicalVisualization() {
         visualizationManager.runGraphicalVisualization();
+    }
+    
+    void handleMakeBidirectional() {
+        if (!hasLocations()) return;
+        
+        std::cout << "\n🔄 JADIKAN GRAF BIDIRECTIONAL" << std::endl;
+        std::cout << "Ini akan menambahkan rute balik untuk setiap rute yang ada." << std::endl;
+        std::cout << "Lanjutkan? (y/n): ";
+        
+        char confirm;
+        std::cin >> confirm;
+        
+        if (confirm == 'y' || confirm == 'Y') {
+            autoGenerator.ensureBidirectionalGraph();
+        } else {
+            std::cout << "❌ Operasi dibatalkan." << std::endl;
+        }
     }
     
     bool hasLocations() {

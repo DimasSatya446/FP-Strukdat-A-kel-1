@@ -35,21 +35,54 @@ public:
             return;
         }
         
-        auto [timeMultiplier, costMultiplier] = getMultipliers(mode);
+        auto multipliers = getMultipliers(mode);
+        double timeMultiplier = multipliers.first;
+        double costMultiplier = multipliers.second;
         
         std::cout << "🎯 Akan membuat rute antar kota yang berdekatan secara geografis..." << std::endl;
         std::cout << "📊 Total lokasi: " << locations.size() << std::endl;
         
         int routesCreated = 0;
         int routesSkipped = 0;
-        
-        if (method == ConnectionMethod::NEAREST_NEIGHBORS) {
-            std::tie(routesCreated, routesSkipped) = generateNearestNeighborRoutes(timeMultiplier, costMultiplier);
+          if (method == ConnectionMethod::NEAREST_NEIGHBORS) {
+            auto result = generateNearestNeighborRoutes(timeMultiplier, costMultiplier);
+            routesCreated = result.first;
+            routesSkipped = result.second;
         } else {
-            std::tie(routesCreated, routesSkipped) = generateRadiusBasedRoutes(timeMultiplier, costMultiplier, radius);
+            auto result = generateRadiusBasedRoutes(timeMultiplier, costMultiplier, radius);
+            routesCreated = result.first;
+            routesSkipped = result.second;
         }
         
         displayGenerationSummary(routesCreated, routesSkipped, locations.size());
+    }
+    
+    void ensureBidirectionalGraph() {
+        std::cout << "\n🔄 MENGUBAH GRAF MENJADI BIDIRECTIONAL" << std::endl;
+        
+        const auto& locations = graph.getLocations();
+        int routesAdded = 0;
+        
+        for (const auto& source : locations) {
+            const std::vector<Route>& routes = graph.getRoutesFrom(source.first);
+            
+            for (const Route& route : routes) {
+                std::string destName = route.getDestination();
+                
+                // Cek apakah rute balik sudah ada
+                if (!routeExists(destName, source.first)) {
+                    // Buat rute balik dengan nilai yang sama
+                    if (graph.addRoute(destName, source.first, route.getTime(), route.getCost())) {
+                        routesAdded++;
+                    }
+                }
+            }
+        }
+        
+        std::cout << "✅ Selesai! " << routesAdded << " rute balik ditambahkan." << std::endl;
+        if (routesAdded == 0) {
+            std::cout << "🎯 Graf sudah bidirectional!" << std::endl;
+        }
     }
     
 private:
@@ -100,9 +133,12 @@ private:
                 double distance = distances[i].first;
                 double time = distance * timeMultiplier;
                 double cost = distance * costMultiplier;
-                
-                if (graph.addRoute(source.first, destName, time, cost)) {
+                  if (graph.addRoute(source.first, destName, time, cost)) {
                     routesCreated++;
+                    // Tambah rute balik untuk membuat graf bidirectional
+                    if (graph.addRoute(destName, source.first, time, cost)) {
+                        routesCreated++;
+                    }
                 }
             }
         }
@@ -131,9 +167,12 @@ private:
                 
                 double time = distance * timeMultiplier;
                 double cost = distance * costMultiplier;
-                
-                if (graph.addRoute(source.first, dest.first, time, cost)) {
+                  if (graph.addRoute(source.first, dest.first, time, cost)) {
                     routesCreated++;
+                    // Tambah rute balik untuk membuat graf bidirectional  
+                    if (graph.addRoute(dest.first, source.first, time, cost)) {
+                        routesCreated++;
+                    }
                 }
             }
         }

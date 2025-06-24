@@ -78,6 +78,21 @@ public:
         return true;
     }
     
+    bool addBidirectionalRoute(const std::string& sourceName, const std::string& destName,
+                              double time, double cost) {
+        bool success1 = addRoute(sourceName, destName, time, cost);
+        bool success2 = addRoute(destName, sourceName, time, cost);
+        
+        if (success1 && success2) {
+            std::cout << "🔄 Rute bidirectional berhasil dibuat antara '" << sourceName << "' dan '" << destName << "'" << std::endl;
+            return true;
+        } else if (success1 || success2) {
+            std::cout << "⚠️  Rute bidirectional sebagian berhasil dibuat." << std::endl;
+            return true;
+        }
+        return false;
+    }
+    
     bool removeRoute(const std::string& sourceName, const std::string& destName) {
         if (adjacencyList.find(sourceName) == adjacencyList.end()) {
             std::cout << "❌ Lokasi asal tidak ditemukan." << std::endl;
