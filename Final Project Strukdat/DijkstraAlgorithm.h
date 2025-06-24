@@ -1,6 +1,8 @@
 #ifndef DIJKSTRA_ALGORITHM_H
 #define DIJKSTRA_ALGORITHM_H
 
+
+using namespace std;
 #include "GraphManager.h"
 #include "PreferenceManager.h"
 #include <queue>
@@ -12,11 +14,11 @@
 #include <algorithm>
 
 struct PathResult {
-    std::vector<std::string> path;
+    vector<string> path;
     double totalCost;
     
     PathResult() : totalCost(0) {}
-    PathResult(const std::vector<std::string>& path, double cost) 
+    PathResult(const vector<string>& path, double cost) 
         : path(path), totalCost(cost) {}
 };
 
@@ -28,37 +30,37 @@ public:
     explicit DijkstraAlgorithm(const GraphManager& graph) : graph(graph) {}
     virtual ~DijkstraAlgorithm() = default;
     
-    PathResult findShortestPath(const std::string& start, const std::string& end, 
-                               const std::string& mode) const {
-        std::map<std::string, double> cost;
-        std::map<std::string, std::string> previous;
-        std::set<std::string> visited;
+    PathResult findShortestPath(const string& start, const string& end, 
+                               const string& mode) const {
+        map<string, double> cost;
+        map<string, string> previous;
+        set<string> visited;
 
-        auto cmp = [&cost](const std::string& a, const std::string& b) {
+        auto cmp = [&cost](const string& a, const string& b) {
             return cost[a] > cost[b];
         };
-        std::priority_queue<std::string, std::vector<std::string>, decltype(cmp)> pq(cmp);
+        priority_queue<string, vector<string>, decltype(cmp)> pq(cmp);
 
         for (const auto& pair : graph.getLocations()) {
-            cost[pair.first] = std::numeric_limits<double>::infinity();
+            cost[pair.first] = numeric_limits<double>::infinity();
         }
 
         cost[start] = 0;
         pq.push(start);
 
         while (!pq.empty()) {
-            std::string current = pq.top();
+            string current = pq.top();
             pq.pop();
 
             if (visited.count(current)) continue;
             visited.insert(current);
 
             for (const auto& route : graph.getRoutesFrom(current)) {
-                std::string neighbor = route.getDestination();
+                string neighbor = route.getDestination();
                 double weight = route.getWeightByMode(mode);
                 
                 if (weight == 0 && mode != "jarak" && mode != "waktu" && mode != "biaya") {
-                    std::cerr << "❌ Mode tidak dikenal!" << std::endl;
+                    cerr << "❌ Mode tidak dikenal!" << endl;
                     return PathResult();
                 }
 
@@ -74,33 +76,33 @@ public:
         return reconstructPath(start, end, previous, cost);
     }
     
-    PathResult findBestRouteWithPreference(const std::string& start, const std::string& end, 
+    PathResult findBestRouteWithPreference(const string& start, const string& end, 
                                           const PreferenceManager& pref) const {
-        std::map<std::string, double> cost;
-        std::map<std::string, std::string> previous;
-        std::set<std::string> visited;
+        map<string, double> cost;
+        map<string, string> previous;
+        set<string> visited;
 
-        auto cmp = [&cost](const std::string& a, const std::string& b) {
+        auto cmp = [&cost](const string& a, const string& b) {
             return cost[a] > cost[b];
         };
-        std::priority_queue<std::string, std::vector<std::string>, decltype(cmp)> pq(cmp);
+        priority_queue<string, vector<string>, decltype(cmp)> pq(cmp);
 
         for (const auto& pair : graph.getLocations()) {
-            cost[pair.first] = std::numeric_limits<double>::infinity();
+            cost[pair.first] = numeric_limits<double>::infinity();
         }
 
         cost[start] = 0;
         pq.push(start);
 
         while (!pq.empty()) {
-            std::string current = pq.top();
+            string current = pq.top();
             pq.pop();
 
             if (visited.count(current)) continue;
             visited.insert(current);
 
             for (const auto& route : graph.getRoutesFrom(current)) {
-                std::string neighbor = route.getDestination();
+                string neighbor = route.getDestination();
 
                 double skor = pref.calculateScore(route.getTime(), route.getCost(), route.getDistance());
 
@@ -117,11 +119,11 @@ public:
     }
     
 private:
-    PathResult reconstructPath(const std::string& start, const std::string& end,
-                              const std::map<std::string, std::string>& previous,
-                              const std::map<std::string, double>& cost) const {
-        std::vector<std::string> path;
-        std::string temp = end;
+    PathResult reconstructPath(const string& start, const string& end,
+                              const map<string, string>& previous,
+                              const map<string, double>& cost) const {
+        vector<string> path;
+        string temp = end;
         
         while (temp != start && previous.find(temp) != previous.end()) {
             path.push_back(temp);
@@ -130,11 +132,11 @@ private:
 
         if (temp == start) {
             path.push_back(start);
-            std::reverse(path.begin(), path.end());
+            reverse(path.begin(), path.end());
             return PathResult(path, cost.at(end));
         }
 
-        std::cout << "❌ Rute tidak ditemukan dari " << start << " ke " << end << std::endl;
+        cout << "❌ Rute tidak ditemukan dari " << start << " ke " << end << endl;
         return PathResult();
     }
 };

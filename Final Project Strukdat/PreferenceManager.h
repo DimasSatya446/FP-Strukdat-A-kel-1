@@ -5,6 +5,8 @@
 #include <string>
 #include <map>
 
+using namespace std;
+
 class PreferenceManager {
 private:
     int waktuPriority;
@@ -35,14 +37,14 @@ public:
     virtual ~PreferenceManager() = default;
     
     void inputPrioritas() {
-        std::cout << "Masukkan prioritas (1 = paling penting, 3 = paling tidak penting)\n";
-        std::cout << "Prioritas Waktu : ";
-        std::cin >> waktuPriority;
-        std::cout << "Prioritas Biaya : ";
-        std::cin >> biayaPriority;
-        std::cout << "Prioritas Jarak : ";
-        std::cin >> jarakPriority;
-        std::cin.ignore();
+        cout << "Masukkan prioritas (1 = paling penting, 3 = paling tidak penting)\n";
+        cout << "Prioritas Waktu : ";
+        cin >> waktuPriority;
+        cout << "Prioritas Biaya : ";
+        cin >> biayaPriority;
+        cout << "Prioritas Jarak : ";
+        cin >> jarakPriority;
+        cin.ignore();
         
         calculateWeights();
     }
@@ -55,10 +57,10 @@ public:
     }
     
     void tampilkan() const {
-        std::cout << "Bobot berdasarkan preferensi:\n";
-        std::cout << "- Waktu : " << weightWaktu << "\n";
-        std::cout << "- Biaya : " << weightBiaya << "\n";
-        std::cout << "- Jarak : " << weightJarak << "\n";
+        cout << "Bobot berdasarkan preferensi:\n";
+        cout << "- Waktu : " << weightWaktu << "\n";
+        cout << "- Biaya : " << weightBiaya << "\n";
+        cout << "- Jarak : " << weightJarak << "\n";
     }
     
     double getWeightWaktu() const { return weightWaktu; }

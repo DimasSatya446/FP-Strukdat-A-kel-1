@@ -13,7 +13,6 @@
 #include <iomanip>
 using namespace std;
 
-// Simple Location class for visualizer
 class SimpleLocation {
 public:
     string name;
@@ -27,7 +26,6 @@ public:
     }
 };
 
-// Simple Route class for visualizer  
 class SimpleRoute {
 public:
     string source, destination;

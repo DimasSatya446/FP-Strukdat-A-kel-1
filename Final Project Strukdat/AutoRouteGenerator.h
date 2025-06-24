@@ -7,6 +7,8 @@
 #include <iostream>
 #include <iomanip>
 
+using namespace std;
+
 class AutoRouteGenerator {
 private:
     GraphManager& graph;
@@ -16,9 +18,9 @@ public:
     virtual ~AutoRouteGenerator() = default;
     
     enum class TransportMode {
-        FAST,    // Mode Cepat
-        NORMAL,  // Mode Normal  
-        ECONOMY  // Mode Ekonomis
+        FAST,    
+        NORMAL,    
+        ECONOMY  
     };
     
     enum class ConnectionMethod {
@@ -27,11 +29,11 @@ public:
     };
     
     void generateRoutes(TransportMode mode, ConnectionMethod method, double radius = 0) {
-        std::cout << "\n🤖 AUTO-GENERATE RUTE REALISTIS" << std::endl;
+        cout << "\n🤖 AUTO-GENERATE RUTE REALISTIS" << endl;
         
         const auto& locations = graph.getLocations();
         if (locations.size() < 2) {
-            std::cout << "❌ Minimal diperlukan 2 lokasi untuk membuat rute." << std::endl;
+            cout << "❌ Minimal diperlukan 2 lokasi untuk membuat rute." << endl;
             return;
         }
         
@@ -39,8 +41,8 @@ public:
         double timeMultiplier = multipliers.first;
         double costMultiplier = multipliers.second;
         
-        std::cout << "🎯 Akan membuat rute antar kota yang berdekatan secara geografis..." << std::endl;
-        std::cout << "📊 Total lokasi: " << locations.size() << std::endl;
+        cout << "🎯 Akan membuat rute antar kota yang berdekatan secara geografis..." << endl;
+        cout << "📊 Total lokasi: " << locations.size() << endl;
         
         int routesCreated = 0;
         int routesSkipped = 0;
@@ -58,16 +60,16 @@ public:
     }
     
     void ensureBidirectionalGraph() {
-        std::cout << "\n🔄 MENGUBAH GRAF MENJADI BIDIRECTIONAL" << std::endl;
+        cout << "\n🔄 MENGUBAH GRAF MENJADI BIDIRECTIONAL" << endl;
         
         const auto& locations = graph.getLocations();
         int routesAdded = 0;
         
         for (const auto& source : locations) {
-            const std::vector<Route>& routes = graph.getRoutesFrom(source.first);
+            const vector<Route>& routes = graph.getRoutesFrom(source.first);
             
             for (const Route& route : routes) {
-                std::string destName = route.getDestination();
+                string destName = route.getDestination();
                 
                 // Cek apakah rute balik sudah ada
                 if (!routeExists(destName, source.first)) {
@@ -79,38 +81,38 @@ public:
             }
         }
         
-        std::cout << "✅ Selesai! " << routesAdded << " rute balik ditambahkan." << std::endl;
+        cout << "✅ Selesai! " << routesAdded << " rute balik ditambahkan." << endl;
         if (routesAdded == 0) {
-            std::cout << "🎯 Graf sudah bidirectional!" << std::endl;
+            cout << "🎯 Graf sudah bidirectional!" << endl;
         }
     }
     
 private:
-    std::pair<double, double> getMultipliers(TransportMode mode) const {
+    pair<double, double> getMultipliers(TransportMode mode) const {
         switch(mode) {
             case TransportMode::FAST:
-                std::cout << "✅ Mode Cepat dipilih (waktu = jarak x 2, biaya = jarak x 5000)" << std::endl;
+                cout << "✅ Mode Cepat dipilih (waktu = jarak x 2, biaya = jarak x 5000)" << endl;
                 return {2.0, 5000.0};
             case TransportMode::NORMAL:
-                std::cout << "✅ Mode Normal dipilih (waktu = jarak x 3, biaya = jarak x 7500)" << std::endl;
+                cout << "✅ Mode Normal dipilih (waktu = jarak x 3, biaya = jarak x 7500)" << endl;
                 return {3.0, 7500.0};
             case TransportMode::ECONOMY:
-                std::cout << "✅ Mode Ekonomis dipilih (waktu = jarak x 5, biaya = jarak x 3000)" << std::endl;
+                cout << "✅ Mode Ekonomis dipilih (waktu = jarak x 5, biaya = jarak x 3000)" << endl;
                 return {5.0, 3000.0};
             default:
                 return {3.0, 7500.0};
         }
     }
     
-    std::pair<int, int> generateNearestNeighborRoutes(double timeMultiplier, double costMultiplier) {
+    pair<int, int> generateNearestNeighborRoutes(double timeMultiplier, double costMultiplier) {
         const auto& locations = graph.getLocations();
         int routesCreated = 0;
         int routesSkipped = 0;
         
-        std::cout << "\n🌐 Menggunakan metode koneksi berdasarkan jarak terdekat (max 3 koneksi per kota)" << std::endl;
+        cout << "\n🌐 Menggunakan metode koneksi berdasarkan jarak terdekat (max 3 koneksi per kota)" << endl;
         
         for (const auto& source : locations) {
-            std::vector<std::pair<double, std::string>> distances;
+            vector<pair<double, string>> distances;
             
             for (const auto& dest : locations) {
                 if (source.first != dest.first) {
@@ -119,11 +121,11 @@ private:
                 }
             }
             
-            std::sort(distances.begin(), distances.end());
-            int maxConnections = std::min(3, static_cast<int>(distances.size()));
+            sort(distances.begin(), distances.end());
+            int maxConnections = min(3, static_cast<int>(distances.size()));
             
             for (int i = 0; i < maxConnections; ++i) {
-                std::string destName = distances[i].second;
+                string destName = distances[i].second;
                 
                 if (routeExists(source.first, destName)) {
                     routesSkipped++;
@@ -146,12 +148,12 @@ private:
         return {routesCreated, routesSkipped};
     }
     
-    std::pair<int, int> generateRadiusBasedRoutes(double timeMultiplier, double costMultiplier, double maxRadius) {
+    pair<int, int> generateRadiusBasedRoutes(double timeMultiplier, double costMultiplier, double maxRadius) {
         const auto& locations = graph.getLocations();
         int routesCreated = 0;
         int routesSkipped = 0;
         
-        std::cout << "\n📏 Menggunakan metode koneksi kota dalam radius " << maxRadius << " km" << std::endl;
+        cout << "\n📏 Menggunakan metode koneksi kota dalam radius " << maxRadius << " km" << endl;
         
         for (const auto& source : locations) {
             for (const auto& dest : locations) {
@@ -180,8 +182,8 @@ private:
         return {routesCreated, routesSkipped};
     }
     
-    bool routeExists(const std::string& sourceName, const std::string& destName) const {
-        const std::vector<Route>& existingRoutes = graph.getRoutesFrom(sourceName);
+    bool routeExists(const string& sourceName, const string& destName) const {
+        const vector<Route>& existingRoutes = graph.getRoutesFrom(sourceName);
         for (const Route& route : existingRoutes) {
             if (route.getDestination() == destName) {
                 return true;
@@ -191,15 +193,15 @@ private:
     }
     
     void displayGenerationSummary(int routesCreated, int routesSkipped, size_t locationCount) const {
-        std::cout << "\n✅ SELESAI!" << std::endl;
-        std::cout << "📊 Statistik:" << std::endl;
-        std::cout << "   🆕 Rute baru dibuat: " << routesCreated << std::endl;
-        std::cout << "   ⏭️  Rute dilewati (sudah ada): " << routesSkipped << std::endl;
-        std::cout << "   📍 Total lokasi: " << locationCount << std::endl;
+        cout << "\n✅ SELESAI!" << endl;
+        cout << "📊 Statistik:" << endl;
+        cout << "   🆕 Rute baru dibuat: " << routesCreated << endl;
+        cout << "   ⏭️  Rute dilewati (sudah ada): " << routesSkipped << endl;
+        cout << "   📍 Total lokasi: " << locationCount << endl;
         
         if (locationCount > 0) {
-            std::cout << "   🔗 Rata-rata koneksi per kota: " << std::fixed << std::setprecision(1) 
-                     << static_cast<double>(routesCreated) / locationCount << std::endl;
+            cout << "   🔗 Rata-rata koneksi per kota: " << fixed << setprecision(1) 
+                     << static_cast<double>(routesCreated) / locationCount << endl;
         }
     }
 };

@@ -12,31 +12,32 @@
 #include <sstream>
 #include <iomanip>
 #include <algorithm>
+using namespace std;
 
 class GraphManager {
 private:
-    std::unordered_map<std::string, Location> locations;
-    std::unordered_map<std::string, std::vector<Route>> adjacencyList;
+    unordered_map<string, Location> locations;
+    unordered_map<string, vector<Route>> adjacencyList;
 
 public:
     GraphManager() = default;
     virtual ~GraphManager() = default;
     
-    bool addLocation(const std::string& name, double x, double y) {
+    bool addLocation(const string& name, double x, double y) {
         if (locations.find(name) != locations.end()) {
-            std::cout << "❌ Lokasi '" << name << "' sudah ada." << std::endl;
+            cout << "❌ Lokasi '" << name << "' sudah ada." << endl;
             return false;
         }
         
         locations.emplace(name, Location(name, x, y));
-        adjacencyList[name] = std::vector<Route>();
-        std::cout << "✅ Lokasi '" << name << "' di koordinat (" << x << ", " << y << ") berhasil ditambahkan." << std::endl;
+        adjacencyList[name] = vector<Route>();
+        cout << "✅ Lokasi '" << name << "' di koordinat (" << x << ", " << y << ") berhasil ditambahkan." << endl;
         return true;
     }
     
-    bool removeLocation(const std::string& name) {
+    bool removeLocation(const string& name) {
         if (locations.find(name) == locations.end()) {
-            std::cout << "❌ Lokasi '" << name << "' tidak ditemukan." << std::endl;
+            cout << "❌ Lokasi '" << name << "' tidak ditemukan." << endl;
             return false;
         }
         
@@ -45,27 +46,27 @@ public:
         
         for (auto& pair : adjacencyList) {
             auto& routes = pair.second;
-            routes.erase(std::remove_if(routes.begin(), routes.end(),
+            routes.erase(remove_if(routes.begin(), routes.end(),
                 [&name](const Route& route) {
                     return route.getDestination() == name;
                 }), routes.end());
         }
         
-        std::cout << "✅ Lokasi '" << name << "' berhasil dihapus." << std::endl;
+        cout << "✅ Lokasi '" << name << "' berhasil dihapus." << endl;
         return true;
     }
     
-    bool addRoute(const std::string& sourceName, const std::string& destName,
+    bool addRoute(const string& sourceName, const string& destName,
                   double time, double cost) {
         if (locations.find(sourceName) == locations.end() || 
             locations.find(destName) == locations.end()) {
-            std::cout << "❌ Lokasi asal atau tujuan tidak ditemukan." << std::endl;
+            cout << "❌ Lokasi asal atau tujuan tidak ditemukan." << endl;
             return false;
         }
 
         for (const auto& r : adjacencyList[sourceName]) {
             if (r.getDestination() == destName) {
-                std::cout << "❌ Rute dari '" << sourceName << "' ke '" << destName << "' sudah ada." << std::endl;
+                cout << "❌ Rute dari '" << sourceName << "' ke '" << destName << "' sudah ada." << endl;
                 return false;
             }
         }
@@ -73,52 +74,52 @@ public:
         double distance = locations.at(sourceName).distanceTo(locations.at(destName));
         
         adjacencyList[sourceName].emplace_back(sourceName, destName, distance, time, cost);
-        std::cout << "✅ Rute dari '" << sourceName << "' ke '" << destName << "' berhasil ditambahkan." << std::endl;
-        std::cout << "📏 Jarak otomatis: " << std::fixed << std::setprecision(1) << distance << " km" << std::endl;
+        cout << "✅ Rute dari '" << sourceName << "' ke '" << destName << "' berhasil ditambahkan." << endl;
+        cout << "📏 Jarak otomatis: " << fixed << setprecision(1) << distance << " km" << endl;
         return true;
     }
     
-    bool addBidirectionalRoute(const std::string& sourceName, const std::string& destName,
+    bool addBidirectionalRoute(const string& sourceName, const string& destName,
                               double time, double cost) {
         bool success1 = addRoute(sourceName, destName, time, cost);
         bool success2 = addRoute(destName, sourceName, time, cost);
         
         if (success1 && success2) {
-            std::cout << "🔄 Rute bidirectional berhasil dibuat antara '" << sourceName << "' dan '" << destName << "'" << std::endl;
+            cout << "🔄 Rute bidirectional berhasil dibuat antara '" << sourceName << "' dan '" << destName << "'" << endl;
             return true;
         } else if (success1 || success2) {
-            std::cout << "⚠️  Rute bidirectional sebagian berhasil dibuat." << std::endl;
+            cout << "⚠️  Rute bidirectional sebagian berhasil dibuat." << endl;
             return true;
         }
         return false;
     }
     
-    bool removeRoute(const std::string& sourceName, const std::string& destName) {
+    bool removeRoute(const string& sourceName, const string& destName) {
         if (adjacencyList.find(sourceName) == adjacencyList.end()) {
-            std::cout << "❌ Lokasi asal tidak ditemukan." << std::endl;
+            cout << "❌ Lokasi asal tidak ditemukan." << endl;
             return false;
         }
         
         auto& routes = adjacencyList[sourceName];
-        auto it = std::remove_if(routes.begin(), routes.end(),
+        auto it = remove_if(routes.begin(), routes.end(),
             [&destName](const Route& route) {
                 return route.getDestination() == destName;
             });
         
         if (it == routes.end()) {
-            std::cout << "❌ Rute dari '" << sourceName << "' ke '" << destName << "' tidak ditemukan." << std::endl;
+            cout << "❌ Rute dari '" << sourceName << "' ke '" << destName << "' tidak ditemukan." << endl;
             return false;
         }
         
         routes.erase(it, routes.end());
-        std::cout << "✅ Rute dari '" << sourceName << "' ke '" << destName << "' berhasil dihapus." << std::endl;
+        cout << "✅ Rute dari '" << sourceName << "' ke '" << destName << "' berhasil dihapus." << endl;
         return true;
     }
     
-    bool updateRoute(const std::string& sourceName, const std::string& destName,
+    bool updateRoute(const string& sourceName, const string& destName,
                      double newTime, double newCost) {
         if (adjacencyList.find(sourceName) == adjacencyList.end()) {
-            std::cout << "❌ Lokasi asal tidak ditemukan." << std::endl;
+            cout << "❌ Lokasi asal tidak ditemukan." << endl;
             return false;
         }
         
@@ -127,21 +128,21 @@ public:
             if (route.getDestination() == destName) {
                 route.setTime(newTime);
                 route.setCost(newCost);
-                std::cout << "✅ Rute berhasil diperbarui." << std::endl;
+                cout << "✅ Rute berhasil diperbarui." << endl;
                 return true;
             }
         }
         
-        std::cout << "❌ Rute tidak ditemukan." << std::endl;
+        cout << "❌ Rute tidak ditemukan." << endl;
         return false;
     }
     
-    const std::unordered_map<std::string, Location>& getLocations() const {
+    const unordered_map<string, Location>& getLocations() const {
         return locations;
     }
     
-    const std::vector<Route>& getRoutesFrom(const std::string& sourceName) const {
-        static const std::vector<Route> empty_routes;
+    const vector<Route>& getRoutesFrom(const string& sourceName) const {
+        static const vector<Route> empty_routes;
         auto it = adjacencyList.find(sourceName);
         if (it == adjacencyList.end()) {
             return empty_routes;
@@ -150,105 +151,105 @@ public:
     }
     
     void displayGraph() const {
-        std::cout << "\n🗺️  === REPRESENTASI GRAF RUTE ===" << std::endl;
+        cout << "\n🗺️  === REPRESENTASI GRAF RUTE ===" << endl;
         if (locations.empty()) {
-            std::cout << "Graf kosong. Tidak ada lokasi atau rute." << std::endl;
+            cout << "Graf kosong. Tidak ada lokasi atau rute." << endl;
             return;
         }
 
         for (const auto& pair : adjacencyList) {
-            const std::string& sourceName = pair.first;
-            const std::vector<Route>& routes = pair.second;
+            const string& sourceName = pair.first;
+            const vector<Route>& routes = pair.second;
             const Location& loc = locations.at(sourceName);
             
-            std::cout << "🏙️  " << sourceName 
-                      << " [📍 (" << loc.getX() << ", " << loc.getY() << ")]" << std::endl;
+            cout << "🏙️  " << sourceName 
+                      << " [📍 (" << loc.getX() << ", " << loc.getY() << ")]" << endl;
             
             if (routes.empty()) {
-                std::cout << "   ❌ Tidak ada rute keluar dari lokasi ini." << std::endl;
+                cout << "   ❌ Tidak ada rute keluar dari lokasi ini." << endl;
             } else {
                 for (const Route& route : routes) {
-                    std::cout << "   🚗 → " << route.getDestination()
-                              << " | 📏 " << std::fixed << std::setprecision(1) << route.getDistance() << " km"
+                    cout << "   🚗 → " << route.getDestination()
+                              << " | 📏 " << fixed << setprecision(1) << route.getDistance() << " km"
                               << " | ⏱️  " << route.getTime() << " menit"
-                              << " | 💰 Rp " << (int)route.getCost() << std::endl;
+                              << " | 💰 Rp " << (int)route.getCost() << endl;
                 }
             }
-            std::cout << std::endl;
+            cout << endl;
         }
     }
     
     void listLocations() const {
-        std::cout << "\n📍 === DAFTAR LOKASI ===" << std::endl;
+        cout << "\n📍 === DAFTAR LOKASI ===" << endl;
         if (locations.empty()) {
-            std::cout << "❌ Tidak ada lokasi yang tersedia." << std::endl;
+            cout << "❌ Tidak ada lokasi yang tersedia." << endl;
             return;
         }
         
         int count = 1;
         for (const auto& pair : locations) {
             const Location& loc = pair.second;
-            std::cout << "[" << count++ << "] 🏙️  " << pair.first 
-                     << " 📍 (" << loc.getX() << ", " << loc.getY() << ")" << std::endl;
+            cout << "[" << count++ << "] 🏙️  " << pair.first 
+                     << " 📍 (" << loc.getX() << ", " << loc.getY() << ")" << endl;
         }
-        std::cout << "═══════════════════════════════════" << std::endl;
+        cout << "═══════════════════════════════════" << endl;
     }
     
-    bool loadLocationsFromCSV(const std::string& filename) {
-        std::ifstream file(filename);
+    bool loadLocationsFromCSV(const string& filename) {
+        ifstream file(filename);
         if (!file.is_open()) {
-            std::cout << "❌ Gagal membuka file: " << filename << std::endl;
+            cout << "❌ Gagal membuka file: " << filename << endl;
             return false;
         }
 
-        std::string line;
-        std::cout << "📂 Memuat lokasi dari " << filename << "..." << std::endl;
+        string line;
+        cout << "📂 Memuat lokasi dari " << filename << "..." << endl;
         
-        while (std::getline(file, line)) {
+        while (getline(file, line)) {
             if (line.empty()) continue;
             
-            std::stringstream ss(line);
-            std::string name, xStr, yStr;
+            stringstream ss(line);
+            string name, xStr, yStr;
             
-            std::getline(ss, name, ',');
-            std::getline(ss, xStr, ',');
-            std::getline(ss, yStr);
+            getline(ss, name, ',');
+            getline(ss, xStr, ',');
+            getline(ss, yStr);
             
             try {
-                double x = std::stod(xStr);
-                double y = std::stod(yStr);
+                double x = stod(xStr);
+                double y = stod(yStr);
                 addLocation(name, x, y);
-            } catch (const std::exception& e) {
-                std::cerr << "❌ Error parsing line: " << line << std::endl;
+            } catch (const exception& e) {
+                cerr << "❌ Error parsing line: " << line << endl;
             }
         }
         
         file.close();
-        std::cout << "✅ Lokasi berhasil dimuat dari file!" << std::endl;
+        cout << "✅ Lokasi berhasil dimuat dari file!" << endl;
         return true;
     }
     
-    void saveLocationsToCSV(const std::string& filename) const {
-        std::ofstream file(filename);
+    void saveLocationsToCSV(const string& filename) const {
+        ofstream file(filename);
         if (!file.is_open()) {
-            std::cout << "❌ Gagal membuka file untuk menulis: " << filename << std::endl;
+            cout << "❌ Gagal membuka file untuk menulis: " << filename << endl;
             return;
         }
         
         for (const auto& pair : locations) {
             const Location& loc = pair.second;
-            file << loc.getName() << "," << loc.getX() << "," << loc.getY() << std::endl;
+            file << loc.getName() << "," << loc.getX() << "," << loc.getY() << endl;
         }
         
         file.close();
-        std::cout << "✅ Lokasi berhasil disimpan ke " << filename << std::endl;
+        cout << "✅ Lokasi berhasil disimpan ke " << filename << endl;
     }
     
     size_t getLocationCount() const {
         return locations.size();
     }
     
-    bool hasLocation(const std::string& name) const {
+    bool hasLocation(const string& name) const {
         return locations.find(name) != locations.end();
     }
 };

@@ -11,6 +11,8 @@
 #include <fstream>
 #include <iomanip>
 
+using namespace std;
+
 class TransportationSystem {
 private:
     GraphManager graphManager;
@@ -28,12 +30,12 @@ public:
           visualizationManager(graphManager, dijkstraAlgorithm) {}
 
     void run() {
-        std::cout << "🚀 Selamat datang di Sistem Rute Transportasi!" << std::endl;
-        
+        cout << "🚀 Selamat datang di Sistem Rute Transportasi!" << endl;
+
         int pilihan;
         do {
             showMenu();
-            std::cin >> pilihan;
+            cin >> pilihan;
             
             switch(pilihan) {
                 case 1: handleLoadLocations(); break;
@@ -50,14 +52,14 @@ public:
                 case 12: handleFindRouteWithPreference(); break;
                 case 13: handleTextVisualization(); break;
                 case 14: handleGraphicalVisualization(); break;
-                case 0: std::cout << "👋 Terima kasih telah menggunakan sistem ini!" << std::endl; break;
-                default: std::cout << "❌ Pilihan tidak valid." << std::endl; break;
+                case 0: cout << "👋 Terima kasih telah menggunakan sistem ini!" << endl; break;
+                default: cout << "❌ Pilihan tidak valid." << endl; break;
             }
             
             if (pilihan != 0) {
-                std::cout << "\nTekan Enter untuk melanjutkan...";
-                std::cin.ignore();
-                std::cin.get();
+                cout << "\nTekan Enter untuk melanjutkan...";
+                cin.ignore();
+                cin.get();
             }
             
         } while (pilihan != 0);
@@ -65,35 +67,35 @@ public:
 
 private:
     void showMenu() {
-        std::cout << "\n╔══════════════════════════════════════════════════════════════════════════════╗" << std::endl;
-        std::cout << "║                        SISTEM RUTE TRANSPORTASI                             ║" << std::endl;
-        std::cout << "╚══════════════════════════════════════════════════════════════════════════════╝" << std::endl;
-        std::cout << "=== MANAJEMEN DATA ===" << std::endl;
-        std::cout << "1.  📂 Load Lokasi dari File CSV" << std::endl;
-        std::cout << "2.  🏙️  Tampilkan Daftar Lokasi" << std::endl;
-        std::cout << "3.  ➕ Tambah Lokasi Baru" << std::endl;
-        std::cout << "4.  🛤️  Tambah Rute Baru" << std::endl;
-        std::cout << "5.  🗑️  Hapus Lokasi" << std::endl;
-        std::cout << "6.  🗑️  Hapus Rute" << std::endl;
-        std::cout << "7.  ✏️  Update Rute" << std::endl;
-        std::cout << "8.  🤖 Auto-Generate Rute" << std::endl;
-        std::cout << "9.  🔄 Jadikan Graf Bidirectional" << std::endl;        std::cout << "\n=== PENCARIAN & SIMULASI ===" << std::endl;
-        std::cout << "10. 🗺️  Tampilkan Graf Lengkap" << std::endl;
-        std::cout << "11. 🚀 Cari Rute Terbaik (Single Mode)" << std::endl;
-        std::cout << "12. 🎯 Cari Rute dengan Preferensi Multi-kriteria" << std::endl;
-        std::cout << "\n=== VISUALISASI ===" << std::endl;
-        std::cout << "13. 📊 Visualisasi Teks (Graf & Tree)" << std::endl;
-        std::cout << "14. 🎨 Visualisasi Grafis (SFML)" << std::endl;
-        std::cout << "\n0.  ❌ Keluar" << std::endl;
-        std::cout << "\nPilih menu: ";
-        std::cout.flush();
+        cout << "\n╔══════════════════════════════════════════════════════════════════════════════╗" << endl;
+        cout << "║                        SISTEM RUTE TRANSPORTASI                             ║" << endl;
+        cout << "╚══════════════════════════════════════════════════════════════════════════════╝" << endl;
+        cout << "=== MANAJEMEN DATA ===" << endl;
+        cout << "1.  📂 Load Lokasi dari File CSV" << endl;
+        cout << "2.  🏙️  Tampilkan Daftar Lokasi" << endl;
+        cout << "3.  ➕ Tambah Lokasi Baru" << endl;
+        cout << "4.  🛤️  Tambah Rute Baru" << endl;
+        cout << "5.  🗑️  Hapus Lokasi" << endl;
+        cout << "6.  🗑️  Hapus Rute" << endl;
+        cout << "7.  ✏️  Update Rute" << endl;
+        cout << "8.  🤖 Auto-Generate Rute" << endl;
+        cout << "9.  🔄 Jadikan Graf Bidirectional" << endl;        cout << "\n=== PENCARIAN & SIMULASI ===" << endl;
+        cout << "10. 🗺️  Tampilkan Graf Lengkap" << endl;
+        cout << "11. 🚀 Cari Rute Terbaik (Single Mode)" << endl;
+        cout << "12. 🎯 Cari Rute dengan Preferensi Multi-kriteria" << endl;
+        cout << "\n=== VISUALISASI ===" << endl;
+        cout << "13. 📊 Visualisasi Teks (Graf & Tree)" << endl;
+        cout << "14. 🎨 Visualisasi Grafis (SFML)" << endl;
+        cout << "\n0.  ❌ Keluar" << endl;
+        cout << "\nPilih menu: ";
+        cout.flush();
     }
     
     void handleLoadLocations() {
-        std::string filename;
-        std::cout << "📂 Masukkan nama file CSV (contoh: locations.csv): ";
-        std::cin.ignore();
-        std::getline(std::cin, filename);
+        string filename;
+        cout << "📂 Masukkan nama file CSV (contoh: locations.csv): ";
+        cin.ignore();
+        getline(cin, filename);
         graphManager.loadLocationsFromCSV(filename);
     }
     
@@ -102,28 +104,28 @@ private:
     }
     
     void handleAddLocation() {
-        std::cout << "\n➕ TAMBAH LOKASI BARU" << std::endl;
+        cout << "\n➕ TAMBAH LOKASI BARU" << endl;
         
-        std::string namaLokasi;
+        string namaLokasi;
         double x, y;
         
-        std::cout << "Nama lokasi: ";
-        std::cin.ignore();
-        std::getline(std::cin, namaLokasi);
+        cout << "Nama lokasi: ";
+        cin.ignore();
+        getline(cin, namaLokasi);
         
-        std::cout << "Koordinat X: ";
-        std::cin >> x;
-        std::cout << "Koordinat Y: ";
-        std::cin >> y;
+        cout << "Koordinat X: ";
+        cin >> x;
+        cout << "Koordinat Y: ";
+        cin >> y;
         
         if (graphManager.addLocation(namaLokasi, x, y)) {
-            std::ofstream file("locations.csv", std::ios::app);
+            ofstream file("locations.csv", ios::app);
             if (file.is_open()) {
-                file << namaLokasi << "," << x << "," << y << std::endl;
+                file << namaLokasi << "," << x << "," << y << endl;
                 file.close();
-                std::cout << "✅ Lokasi berhasil disimpan ke file locations.csv" << std::endl;
+                cout << "✅ Lokasi berhasil disimpan ke file locations.csv" << endl;
             } else {
-                std::cout << "⚠️  Lokasi ditambahkan ke sistem tapi gagal menyimpan ke file CSV" << std::endl;
+                cout << "⚠️  Lokasi ditambahkan ke sistem tapi gagal menyimpan ke file CSV" << endl;
             }
         }
     }
@@ -132,27 +134,27 @@ private:
         
         graphManager.listLocations();
         
-        std::vector<std::string> locationNames = getLocationNames();
+        vector<string> locationNames = getLocationNames();
         
-        std::cout << "\n🔗 TAMBAH RUTE BARU" << std::endl;
+        cout << "\n🔗 TAMBAH RUTE BARU" << endl;
         
-        std::string asal = selectLocation("📍 Pilih lokasi asal:", locationNames);
+        string asal = selectLocation("📍 Pilih lokasi asal:", locationNames);
         if (asal.empty()) return;
         
-        std::string tujuan = selectLocation("🎯 Pilih lokasi tujuan:", locationNames, asal);
+        string tujuan = selectLocation("🎯 Pilih lokasi tujuan:", locationNames, asal);
         if (tujuan.empty()) return;
         
-        std::cout << "\n✅ Terpilih: " << asal << " ➜ " << tujuan << std::endl;
+        cout << "\n✅ Terpilih: " << asal << " ➜ " << tujuan << endl;
         
         double waktu, biaya;
-        std::cout << "Waktu tempuh (menit): ";
-        std::cin >> waktu;
-        std::cout << "Biaya perjalanan (Rp): ";
-        std::cin >> biaya;
+        cout << "Waktu tempuh (menit): ";
+        cin >> waktu;
+        cout << "Biaya perjalanan (Rp): ";
+        cin >> biaya;
         
         char bidirectional;
-        std::cout << "Buat rute dua arah? (y/n): ";
-        std::cin >> bidirectional;
+        cout << "Buat rute dua arah? (y/n): ";
+        cin >> bidirectional;
         
         if (bidirectional == 'y' || bidirectional == 'Y') {
             graphManager.addBidirectionalRoute(asal, tujuan, waktu, biaya);
@@ -166,8 +168,8 @@ private:
         
         graphManager.listLocations();
         
-        std::vector<std::string> locationNames = getLocationNames();
-        std::string lokasi = selectLocation("🗑️  Pilih lokasi yang akan dihapus:", locationNames);
+        vector<string> locationNames = getLocationNames();
+        string lokasi = selectLocation("🗑️  Pilih lokasi yang akan dihapus:", locationNames);
         
         if (!lokasi.empty()) {
             graphManager.removeLocation(lokasi);
@@ -179,12 +181,12 @@ private:
         
         graphManager.listLocations();
         
-        std::vector<std::string> locationNames = getLocationNames();
+        vector<string> locationNames = getLocationNames();
         
-        std::string asal = selectLocation("📍 Pilih lokasi asal rute yang akan dihapus:", locationNames);
+        string asal = selectLocation("📍 Pilih lokasi asal rute yang akan dihapus:", locationNames);
         if (asal.empty()) return;
         
-        std::string tujuan = selectLocation("🎯 Pilih lokasi tujuan rute yang akan dihapus:", locationNames, asal);
+        string tujuan = selectLocation("🎯 Pilih lokasi tujuan rute yang akan dihapus:", locationNames, asal);
         if (tujuan.empty()) return;
         
         graphManager.removeRoute(asal, tujuan);
@@ -195,37 +197,37 @@ private:
         
         graphManager.listLocations();
         
-        std::vector<std::string> locationNames = getLocationNames();
+        vector<string> locationNames = getLocationNames();
         
-        std::string asal = selectLocation("📍 Pilih lokasi asal rute yang akan diupdate:", locationNames);
+        string asal = selectLocation("📍 Pilih lokasi asal rute yang akan diupdate:", locationNames);
         if (asal.empty()) return;
         
-        std::string tujuan = selectLocation("🎯 Pilih lokasi tujuan rute yang akan diupdate:", locationNames, asal);
+        string tujuan = selectLocation("🎯 Pilih lokasi tujuan rute yang akan diupdate:", locationNames, asal);
         if (tujuan.empty()) return;
         
         double waktu, biaya;
-        std::cout << "Waktu tempuh baru (menit): ";
-        std::cin >> waktu;
-        std::cout << "Biaya perjalanan baru (Rp): ";
-        std::cin >> biaya;
+        cout << "Waktu tempuh baru (menit): ";
+        cin >> waktu;
+        cout << "Biaya perjalanan baru (Rp): ";
+        cin >> biaya;
         
         graphManager.updateRoute(asal, tujuan, waktu, biaya);
     }
     
     void handleAutoGenerateRoutes() {
         if (graphManager.getLocationCount() < 2) {
-            std::cout << "❌ Minimal diperlukan 2 lokasi untuk auto-generate rute." << std::endl;
+            cout << "❌ Minimal diperlukan 2 lokasi untuk auto-generate rute." << endl;
             return;
         }
         
-        std::cout << "\nPilih mode transportasi:" << std::endl;
-        std::cout << "[1] 🏎️  Mode Cepat (waktu = jarak x 2, biaya = jarak x 5000)" << std::endl;
-        std::cout << "[2] 🚗 Mode Normal (waktu = jarak x 3, biaya = jarak x 7500)" << std::endl;
-        std::cout << "[3] 🚌 Mode Ekonomis (waktu = jarak x 5, biaya = jarak x 3000)" << std::endl;
-        std::cout << "Pilihan mode (1-3): ";
+        cout << "\nPilih mode transportasi:" << endl;
+        cout << "[1] 🏎️  Mode Cepat (waktu = jarak x 2, biaya = jarak x 5000)" << endl;
+        cout << "[2] 🚗 Mode Normal (waktu = jarak x 3, biaya = jarak x 7500)" << endl;
+        cout << "[3] 🚌 Mode Ekonomis (waktu = jarak x 5, biaya = jarak x 3000)" << endl;
+        cout << "Pilihan mode (1-3): ";
         
         int modeChoice;
-        std::cin >> modeChoice;
+        cin >> modeChoice;
         
         AutoRouteGenerator::TransportMode mode;
         switch(modeChoice) {
@@ -233,28 +235,28 @@ private:
             case 2: mode = AutoRouteGenerator::TransportMode::NORMAL; break;
             case 3: mode = AutoRouteGenerator::TransportMode::ECONOMY; break;
             default: 
-                std::cout << "❌ Pilihan tidak valid, menggunakan mode Normal" << std::endl;
+                cout << "❌ Pilihan tidak valid, menggunakan mode Normal" << endl;
                 mode = AutoRouteGenerator::TransportMode::NORMAL;
                 break;
         }
         
-        std::cout << "\n🔧 Pilih metode koneksi:" << std::endl;
-        std::cout << "[1] 🌐 Koneksi berdasarkan jarak terdekat (max 3 koneksi per kota)" << std::endl;
-        std::cout << "[2] 📏 Koneksi kota dalam radius tertentu" << std::endl;
-        std::cout << "Pilihan metode (1-2): ";
+        cout << "\n🔧 Pilih metode koneksi:" << endl;
+        cout << "[1] 🌐 Koneksi berdasarkan jarak terdekat (max 3 koneksi per kota)" << endl;
+        cout << "[2] 📏 Koneksi kota dalam radius tertentu" << endl;
+        cout << "Pilihan metode (1-2): ";
         
         int connectionChoice;
-        std::cin >> connectionChoice;
+        cin >> connectionChoice;
         
         if (connectionChoice == 1) {
             autoGenerator.generateRoutes(mode, AutoRouteGenerator::ConnectionMethod::NEAREST_NEIGHBORS);
         } else if (connectionChoice == 2) {
-            std::cout << "Masukkan radius maksimal koneksi (km): ";
+            cout << "Masukkan radius maksimal koneksi (km): ";
             double radius;
-            std::cin >> radius;
+            cin >> radius;
             autoGenerator.generateRoutes(mode, AutoRouteGenerator::ConnectionMethod::RADIUS_BASED, radius);
         } else {
-            std::cout << "❌ Pilihan tidak valid." << std::endl;
+            cout << "❌ Pilihan tidak valid." << endl;
         }
     }
     
@@ -267,38 +269,38 @@ private:
         
         graphManager.listLocations();
         
-        std::vector<std::string> locationNames = getLocationNames();
+        vector<string> locationNames = getLocationNames();
         
-        std::cout << "\n🎯 PENCARIAN RUTE TERBAIK (SINGLE MODE)" << std::endl;
+        cout << "\n🎯 PENCARIAN RUTE TERBAIK (SINGLE MODE)" << endl;
         
-        std::string asal = selectLocation("🚀 Pilih lokasi awal:", locationNames);
+        string asal = selectLocation("🚀 Pilih lokasi awal:", locationNames);
         if (asal.empty()) return;
         
-        std::string tujuan = selectLocation("🏁 Pilih lokasi tujuan:", locationNames, asal);
+        string tujuan = selectLocation("🏁 Pilih lokasi tujuan:", locationNames, asal);
         if (tujuan.empty()) return;
         
-        std::cout << "\n✅ Rute terpilih: " << asal << " ➜ " << tujuan << std::endl;
+        cout << "\n✅ Rute terpilih: " << asal << " ➜ " << tujuan << endl;
         
-        std::cout << "\n⚙️  Pilih mode prioritas:" << std::endl;
-        std::cout << "[1] 📏 Jarak terpendek" << std::endl;
-        std::cout << "[2] ⏱️  Waktu tercepat" << std::endl;
-        std::cout << "[3] 💰 Biaya termurah" << std::endl;
-        std::cout << "Pilihan mode (1-3): ";
+        cout << "\n⚙️  Pilih mode prioritas:" << endl;
+        cout << "[1] 📏 Jarak terpendek" << endl;
+        cout << "[2] ⏱️  Waktu tercepat" << endl;
+        cout << "[3] 💰 Biaya termurah" << endl;
+        cout << "Pilihan mode (1-3): ";
         
         int modeChoice;
-        std::cin >> modeChoice;
+        cin >> modeChoice;
         
-        std::string mode, modeDesc;
+        string mode, modeDesc;
         switch(modeChoice) {
             case 1: mode = "jarak"; modeDesc = "jarak terpendek"; break;
             case 2: mode = "waktu"; modeDesc = "waktu tercepat"; break;
             case 3: mode = "biaya"; modeDesc = "biaya termurah"; break;
             default: 
-                std::cout << "❌ Pilihan tidak valid." << std::endl;
+                cout << "❌ Pilihan tidak valid." << endl;
                 return;
         }
         
-        std::cout << "\n🔍 Mencari rute dengan prioritas " << modeDesc << "..." << std::endl;
+        cout << "\n🔍 Mencari rute dengan prioritas " << modeDesc << "..." << endl;
         
         PathResult result = dijkstraAlgorithm.findShortestPath(asal, tujuan, mode);
         routeSimulator.simulateJourney(result, mode);
@@ -307,23 +309,23 @@ private:
     void handleFindRouteWithPreference() {
         if (!hasRoutesAvailable()) return;
         
-        std::cout << "\n🎯 PENCARIAN RUTE DENGAN PREFERENSI MULTI-KRITERIA" << std::endl;
-        std::cout << "Sistem akan menggunakan skor gabungan dari waktu, biaya, dan jarak." << std::endl;
+        cout << "\n🎯 PENCARIAN RUTE DENGAN PREFERENSI MULTI-KRITERIA" << endl;
+        cout << "Sistem akan menggunakan skor gabungan dari waktu, biaya, dan jarak." << endl;
         
         preferenceManager.inputPrioritas();
         
         graphManager.listLocations();
         
-        std::vector<std::string> locationNames = getLocationNames();
+        vector<string> locationNames = getLocationNames();
         
-        std::string asal = selectLocation("🚀 Pilih lokasi awal:", locationNames);
+        string asal = selectLocation("🚀 Pilih lokasi awal:", locationNames);
         if (asal.empty()) return;
         
-        std::string tujuan = selectLocation("🏁 Pilih lokasi tujuan:", locationNames, asal);
+        string tujuan = selectLocation("🏁 Pilih lokasi tujuan:", locationNames, asal);
         if (tujuan.empty()) return;
         
-        std::cout << "\n✅ Rute terpilih: " << asal << " ➜ " << tujuan << std::endl;
-        std::cout << "\n🔍 Mencari rute optimal berdasarkan preferensi..." << std::endl;
+        cout << "\n✅ Rute terpilih: " << asal << " ➜ " << tujuan << endl;
+        cout << "\n🔍 Mencari rute optimal berdasarkan preferensi..." << endl;
         
         PathResult result = dijkstraAlgorithm.findBestRouteWithPreference(asal, tujuan, preferenceManager);
         routeSimulator.simulateJourneyWithPreference(result, preferenceManager);
@@ -340,23 +342,23 @@ private:
     void handleMakeBidirectional() {
         if (!hasLocations()) return;
         
-        std::cout << "\n🔄 JADIKAN GRAF BIDIRECTIONAL" << std::endl;
-        std::cout << "Ini akan menambahkan rute balik untuk setiap rute yang ada." << std::endl;
-        std::cout << "Lanjutkan? (y/n): ";
+        cout << "\n🔄 JADIKAN GRAF BIDIRECTIONAL" << endl;
+        cout << "Ini akan menambahkan rute balik untuk setiap rute yang ada." << endl;
+        cout << "Lanjutkan? (y/n): ";
         
         char confirm;
-        std::cin >> confirm;
+        cin >> confirm;
         
         if (confirm == 'y' || confirm == 'Y') {
             autoGenerator.ensureBidirectionalGraph();
         } else {
-            std::cout << "❌ Operasi dibatalkan." << std::endl;
+            cout << "❌ Operasi dibatalkan." << endl;
         }
     }
     
     bool hasLocations() {
         if (graphManager.getLocationCount() == 0) {
-            std::cout << "❌ Tidak ada lokasi yang tersedia. Load lokasi dari file terlebih dahulu." << std::endl;
+            cout << "❌ Tidak ada lokasi yang tersedia. Load lokasi dari file terlebih dahulu." << endl;
             return false;
         }
         return true;
@@ -371,37 +373,37 @@ private:
             }
         }
         
-        std::cout << "❌ Tidak ada rute yang tersedia. Sambungkan lokasi terlebih dahulu." << std::endl;
+        cout << "❌ Tidak ada rute yang tersedia. Sambungkan lokasi terlebih dahulu." << endl;
         return false;
     }
     
-    std::vector<std::string> getLocationNames() {
-        std::vector<std::string> locationNames;
+    vector<string> getLocationNames() {
+        vector<string> locationNames;
         for (const auto& loc : graphManager.getLocations()) {
             locationNames.push_back(loc.first);
         }
         return locationNames;
     }
     
-    std::string selectLocation(const std::string& prompt, const std::vector<std::string>& locationNames, 
-                              const std::string& excludeLocation = "") {
-        std::cout << "\n" << prompt << std::endl;
+    string selectLocation(const string& prompt, const vector<string>& locationNames, 
+                              const string& excludeLocation = "") {
+        cout << "\n" << prompt << endl;
         
         int displayIndex = 1;
         for (size_t i = 0; i < locationNames.size(); ++i) {
             if (locationNames[i] != excludeLocation) {
-                std::cout << "[" << displayIndex++ << "] " << locationNames[i] << std::endl;
+                cout << "[" << displayIndex++ << "] " << locationNames[i] << endl;
             }
         }
         
         int maxChoice = excludeLocation.empty() ? locationNames.size() : locationNames.size() - 1;
-        std::cout << "Pilihan (1-" << maxChoice << "): ";
+        cout << "Pilihan (1-" << maxChoice << "): ";
         
         int choice;
-        std::cin >> choice;
+        cin >> choice;
         
         if (choice < 1 || choice > maxChoice) {
-            std::cout << "❌ Pilihan tidak valid." << std::endl;
+            cout << "❌ Pilihan tidak valid." << endl;
             return "";
         }
         
